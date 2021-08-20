@@ -15,6 +15,9 @@ import json
 import logging
 import os
 from typing import Optional
+import subprocess
+import numpy as np
+
 
 from huggingface_hub import HfApi
 from huggingface_hub.file_download import cached_download, hf_hub_url
@@ -238,6 +241,43 @@ def infer_task_from_hub(model_id: str, revision: Optional[str] = None, use_auth_
         raise ValueError(
             f"Task couldn't be inferenced from {model_info.pipeline_tag}." "Use env `HF_TASK` to define your task."
         )
+
+
+def ffmpeg_read(bpayload: bytes, sampling_rate: int) -> np.array:
+    """
+    Helper function to read an audio file through ffmpeg. Librosa does that under the hood but forces the use of an actual
+    file leading to hitting disk, which is almost always very bad.
+    """
+    ar = f"{sampling_rate}"
+    ac = "1"
+    format_for_conversion = "f32le"
+    ffmpeg_command = [
+        "ffmpeg",
+        "-i",
+        "pipe:0",
+        "-ac",
+        ac,
+        "-ar",
+        ar,
+        "-f",
+        format_for_conversion,
+        "-hide_banner",
+        "-loglevel",
+        "quiet",
+        "pipe:1",
+    ]
+
+    try:
+        ffmpeg_process = subprocess.Popen(ffmpeg_command, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    except FileNotFoundError:
+        raise ValueError("ffmpeg was not found but is required to load audio files from filename")
+    output_stream = ffmpeg_process.communicate(bpayload)
+    out_bytes = output_stream[0]
+
+    audio = np.frombuffer(out_bytes, np.float32)
+    if audio.shape[0] == 0:
+        raise ValueError("Malformed soundfile")
+    return audio
 
 
 def get_pipeline(task: str, device: int, model_dir: Path, **kwargs) -> Pipeline:
