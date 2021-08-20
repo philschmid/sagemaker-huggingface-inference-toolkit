@@ -17,11 +17,19 @@ import json
 from io import StringIO
 
 import numpy as np
-from sagemaker_inference import content_types, errors
-from sagemaker_inference.decoder import _npy_to_numpy, _npz_to_sparse
-from sagemaker_inference.encoder import _array_to_npy
+from sagemaker_huggingface_inference_toolkit import content_types
+from sagemaker_huggingface_inference_toolkit.transformers_utils import ffmpeg_read
 
-from mms.service import PredictionException
+from sagemaker_inference.decoder import (
+    _npy_to_numpy,
+    _npz_to_sparse,
+)
+from sagemaker_inference.encoder import (
+    _array_to_npy,
+)
+from sagemaker_inference import (
+    errors,
+)
 
 
 def decode_json(content):
@@ -49,6 +57,18 @@ def decode_csv(string_like):  # type: (str) -> np.array
         return {"inputs": [entry["inputs"] for entry in request_list]}
     else:
         return {"inputs": request_list}
+
+
+def decode_audio(bpayload: bytearray):
+    """Convert a .wav / .flac / .mp3 object to a proper inputs dict.
+
+    Args:
+        bpayload (bytes): byte stream.
+    Returns:
+        (dict): dictonatry for input
+    """
+
+    return {"inputs": bytes(bpayload)}
 
 
 # https://github.com/automl/SMAC3/issues/453
@@ -111,8 +131,10 @@ _encoder_map = {
 _decoder_map = {
     content_types.NPY: _npy_to_numpy,
     content_types.CSV: decode_csv,
-    content_types.NPZ: _npz_to_sparse,
     content_types.JSON: decode_json,
+    content_types.FLAC: decode_audio,
+    content_types.MP3: decode_audio,
+    content_types.WAV: decode_audio,
 }
 
 

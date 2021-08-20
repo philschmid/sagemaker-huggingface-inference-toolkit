@@ -43,6 +43,7 @@ extras = {}
 
 # Hugging Face specific dependencies
 extras["transformers"] = ["transformers[sklearn,sentencepiece]>=4.5.1"]
+extras["speech"] = ["torchaudio==0.8.1", "soundfile"]
 
 # framework specific dependencies
 extras["torch"] = ["torch>=1.4.0"]
