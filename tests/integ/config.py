@@ -192,6 +192,14 @@ task2performance = {
             "average_request_time": 3,
         },
     },
+    "automatic-speech-recognition": {
+        "cpu": {
+            "average_request_time": 6,
+        },
+        "gpu": {
+            "average_request_time": 6,
+        },
+    },
 }
 
 task2validation = {

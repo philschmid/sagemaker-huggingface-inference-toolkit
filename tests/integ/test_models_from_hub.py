@@ -137,7 +137,6 @@ def test_deployment_from_hub(task, device, framework):
                 "device": device,
                 "model": model,
                 "number_of_requests": number_of_requests,
-                "number_of_input_token": count_tokens(task2input[task]["inputs"], task),
                 "average_request_time": np.mean(time_buffer),
                 "max_request_time": max(time_buffer),
                 "min_request_time": min(time_buffer),
