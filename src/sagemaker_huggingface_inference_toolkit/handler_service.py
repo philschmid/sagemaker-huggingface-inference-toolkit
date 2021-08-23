@@ -22,7 +22,6 @@ from abc import ABC
 from sagemaker_inference import content_types, environment, utils
 from transformers.pipelines import SUPPORTED_TASKS
 
-from mms import metrics
 from mms.service import PredictionException
 from sagemaker_huggingface_inference_toolkit import decoder_encoder
 from sagemaker_huggingface_inference_toolkit.transformers_utils import (
@@ -151,8 +150,6 @@ class HuggingFaceHandlerService(ABC):
         inputs = data.pop("inputs", data)
         parameters = data.pop("parameters", None)
 
-        print("inputs", type(inputs))
-        print("instance", isinstance(inputs, bytearray))
         # pass inputs with all kwargs in data
         if parameters is not None:
             prediction = model(inputs, **parameters)

@@ -20,7 +20,7 @@ os.environ["AWS_DEFAULT_REGION"] = REGION  # current DLCs are only in us-east-1 
 # TODO: Replace with released DLC images
 images = {
     "pytorch": {
-        "cpu": "558105141721.dkr.ecr.us-east-1.amazonaws.com/huggingface-inference-pytorch:cpu-0.0.1",
+        "cpu": "558105141721.dkr.ecr.us-east-1.amazonaws.com/huggingface-inference-pytorch:1.8.1-cpu",
         "gpu": "558105141721.dkr.ecr.us-east-1.amazonaws.com/huggingface-inference-pytorch:gpu-0.0.1",
     },
     "tensorflow": {
@@ -33,16 +33,17 @@ images = {
 @pytest.mark.parametrize(
     "task",
     [
-        "text-classification",
-        "zero-shot-classification",
-        "ner",
-        "question-answering",
-        "fill-mask",
-        "summarization",
-        "translation_xx_to_yy",
-        "text2text-generation",
-        "text-generation",
-        "feature-extraction",
+        # "text-classification",
+        # "zero-shot-classification",
+        # "ner",
+        # "question-answering",
+        # "fill-mask",
+        # "summarization",
+        # "translation_xx_to_yy",
+        # "text2text-generation",
+        # "text-generation",
+        # "feature-extraction",
+        "automatic-speech-recognition",
     ],
 )
 @pytest.mark.parametrize(
@@ -93,12 +94,20 @@ def test_deployment_from_hub(task, device, framework):
         time_buffer = []
 
         # Warm up the model
-        response = client.invoke_endpoint(
-            EndpointName=name,
-            Body=json.dumps(task2input[task]),
-            ContentType="application/json",
-            Accept="application/json",
-        )
+        if task == "automatic-speech-recognition":
+            response = client.invoke_endpoint(
+                EndpointName=name,
+                Body=task2input[task],
+                ContentType="audio/x-flac",
+                Accept="application/json",
+            )
+        else:
+            response = client.invoke_endpoint(
+                EndpointName=name,
+                Body=json.dumps(task2input[task]),
+                ContentType="application/json",
+                Accept="application/json",
+            )
 
         # validate response
         response_body = response["Body"].read().decode("utf-8")
@@ -107,12 +116,20 @@ def test_deployment_from_hub(task, device, framework):
 
         for _ in range(number_of_requests):
             with track_infer_time(time_buffer):
-                response = client.invoke_endpoint(
-                    EndpointName=name,
-                    Body=json.dumps(task2input[task]),
-                    ContentType="application/json",
-                    Accept="application/json",
-                )
+                if task == "automatic-speech-recognition":
+                    response = client.invoke_endpoint(
+                        EndpointName=name,
+                        Body=task2input[task],
+                        ContentType="audio/x-flac",
+                        Accept="application/json",
+                    )
+                else:
+                    response = client.invoke_endpoint(
+                        EndpointName=name,
+                        Body=json.dumps(task2input[task]),
+                        ContentType="application/json",
+                        Accept="application/json",
+                    )
         with open(f"{name}.json", "w") as outfile:
             data = {
                 "index": name,

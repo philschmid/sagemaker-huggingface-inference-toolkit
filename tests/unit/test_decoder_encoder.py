@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import json
+import os
 
 import pytest
 
@@ -45,7 +46,7 @@ def test_decode_csv():
         ]
     }
     text_classification_input = "inputs\r\nI love you\r\nI like you"
-    decoded_data = decoder_encoder.decode_csv(DECODE_CSV_INPUT)
+    decoded_data = decoder_encoder.decode_csv(text_classification_input)
     assert decoded_data == {"inputs": ["I love you", "I like you"]}
 
 
@@ -54,6 +55,16 @@ def test_decode_csv_without_header():
         decoder_encoder.decode_csv(
             "where do i live?,My name is Philipp and I live in Nuremberg\r\nwhere is Berlin?,Berlin is the capital of Germany"
         )
+
+
+def test_decode_audio():
+    audio_files_path = os.path.join(os.getcwd(), "tests/resources/audio")
+
+    for audio_file in os.listdir(audio_files_path):
+        audio_bytes = open(os.path.join(audio_files_path, audio_file), "rb").read()
+        decoded_data = decoder_encoder.decode_audio(bytearray(audio_bytes))
+
+        assert {"inputs": audio_bytes} == decoded_data
 
 
 def test_encode_json():

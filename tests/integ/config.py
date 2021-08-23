@@ -1,4 +1,7 @@
+import os
+
 from integ.utils import (
+    validate_automatic_speech_recognition,
     validate_feature_extraction,
     validate_fill_mask,
     validate_ner,
@@ -53,6 +56,10 @@ task2model = {
         "pytorch": "gpt2",
         "tensorflow": "gpt2",
     },
+    "automatic-speech-recognition": {
+        "pytorch": "facebook/wav2vec2-base-100h",
+        "tensorflow": "facebook/wav2vec2-base-960h",
+    },
 }
 
 task2input = {
@@ -78,6 +85,7 @@ task2input = {
         "inputs": "question: What is 42 context: 42 is the answer to life, the universe and everything."
     },
     "text-generation": {"inputs": "My name is philipp and I am"},
+    "automatic-speech-recognition": open(os.path.join(os.getcwd(), "tests/resources/audio/sample1.flac"), "rb").read(),
 }
 
 task2output = {
@@ -98,6 +106,9 @@ task2output = {
     "feature-extraction": None,
     "fill-mask": None,
     "text-generation": None,
+    "automatic-speech-recognition": {
+        "text": "GOING ALONG SLUSHY COUNTRY ROADS AND SPEAKING TO DAMP OAUDIENCES IN DROFTY SCHOOL ROOMS DAY AFTER DAY FOR A FORT NIGHT HE'LL HAVE TO PUT IN AN APPEARANCE AT SOME PLACE OF WORSHIP ON SUNDAY MORNING AND HE CAN COME TO US IMMEDIATELY AFTERWARDS"
+    },
 }
 
 task2performance = {
@@ -194,4 +205,5 @@ task2validation = {
     "translation_xx_to_yy": validate_translation,
     "text2text-generation": validate_text2text_generation,
     "text-generation": validate_text_generation,
+    "automatic-speech-recognition": validate_automatic_speech_recognition,
 }

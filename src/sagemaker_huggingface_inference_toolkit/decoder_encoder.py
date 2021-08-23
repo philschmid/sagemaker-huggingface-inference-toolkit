@@ -17,18 +17,12 @@ import json
 from io import StringIO
 
 import numpy as np
-from sagemaker_huggingface_inference_toolkit import content_types
+from sagemaker_inference import errors
+from sagemaker_inference.decoder import _npy_to_numpy
+from sagemaker_inference.encoder import _array_to_npy
 
-from sagemaker_inference.decoder import (
-    _npy_to_numpy,
-    _npz_to_sparse,
-)
-from sagemaker_inference.encoder import (
-    _array_to_npy,
-)
-from sagemaker_inference import (
-    errors,
-)
+from mms.service import PredictionException
+from sagemaker_huggingface_inference_toolkit import content_types
 
 
 def decode_json(content):
@@ -47,7 +41,7 @@ def decode_csv(string_like):  # type: (str) -> np.array
     # detects if the incoming csv has headers
     if not any(header in string_like.splitlines()[0].lower() for header in ["question", "context", "inputs"]):
         raise PredictionException(
-            f"You need to provide the correct CSV with Header columns to use it with the inference toolkit default handler.",
+            "You need to provide the correct CSV with Header columns to use it with the inference toolkit default handler.",
             400,
         )
     # reads csv as io
