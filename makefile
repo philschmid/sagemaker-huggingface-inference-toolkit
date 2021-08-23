@@ -11,9 +11,9 @@ run:
 	-p 8080:8080  558105141721.dkr.ecr.us-east-1.amazonaws.com/huggingface-inference-pytorch:1.8.1-cpu
 
 build:
-	docker build --tag 558105141721.dkr.ecr.us-east-1.amazonaws.com/huggingface-inference-pytorch:neuron \
+	docker build --tag 558105141721.dkr.ecr.us-east-1.amazonaws.com/huggingface-inference-pytorch:1.8.1-cpu \
 							 --build-arg TRANSFORMERS_VERSION=4.9.2 \
-							 --file ./docker/Dockerfile.neuron \
+							 --file ./docker/Dockerfile.cpu \
 							 .
 start:	build run
 
