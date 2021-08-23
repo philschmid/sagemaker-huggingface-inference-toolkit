@@ -23,4 +23,5 @@ UTF8_TYPES = [JSON, CSV]
 FLAC = "audio/x-flac"
 MP3 = "audio/mpeg"
 WAV = "audio/wave"
-AUDIO_TYPES = [FLAC, MP3, WAV]
+OGG = "audio/ogg"
+AUDIO_TYPES = [FLAC, MP3, WAV, OGG]

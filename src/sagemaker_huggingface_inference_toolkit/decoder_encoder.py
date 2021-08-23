@@ -17,7 +17,6 @@ from io import StringIO
 import csv
 import numpy as np
 from sagemaker_huggingface_inference_toolkit import content_types
-from sagemaker_huggingface_inference_toolkit.transformers_utils import ffmpeg_read
 
 from sagemaker_inference.decoder import (
     _npy_to_numpy,
@@ -124,9 +123,11 @@ _decoder_map = {
     content_types.NPY: _npy_to_numpy,
     content_types.CSV: decode_csv,
     content_types.JSON: decode_json,
+    # audio mime-types
     content_types.FLAC: decode_audio,
     content_types.MP3: decode_audio,
     content_types.WAV: decode_audio,
+    content_types.OGG: decode_audio,
 }
 
 
